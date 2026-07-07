@@ -1,0 +1,101 @@
+model_name: null  # checkpoint path or HF id; can also be set via --model-name
+
+generation:
+  api_base_url: "http://127.0.0.1:8000/v1"
+  api_key: "EMPTY"
+  tokenizer_name: null
+  output_jsonl: null
+  generations_jsonl: null
+
+  hf_dataset: "LiquidAI/antidoom-mix-v1.0"
+  hf_split: "train"
+  hf_source_field: "source"
+  hf_source_values: []
+  input_jsonl: null
+  prompt_field: "conversations"
+  max_prompts: null
+  target_pairs: 20000
+  target_pair_batch_size: 256
+  threads: 500
+  generation_backend: "vllm"
+  request_batch_size: 99999
+  vllm_dtype: "bfloat16"
+  vllm_tensor_parallel_size: null
+  vllm_max_model_len: 6000
+  vllm_gpu_memory_utilization: 0.85
+  vllm_enable_prefix_caching: false
+  vllm_trust_remote_code: true
+  vllm_kwargs: {}
+
+  prompt_template: |-
+    {prompt}
+
+    Think through the problem step by step, then respond with your final answer as "Answer: <your answer>".
+  system_prompt: ""
+
+  max_prompt_tokens: 2000
+  max_new_tokens: 4000
+  temperature: 0.1
+  temperatures: null
+  top_p: 1.0
+  top_k: 50
+  min_p: 0.01
+  top_logprobs: 20
+  timeout: 1800
+  stop: []
+
+  repetition:
+    min_repeats: 4
+    max_period: 1024
+    min_period: 1
+    min_total_repeated: 60
+    sample_len: 16
+    sample_interval: 128
+
+  chosen_max_tokens: 20
+  chosen_top_k: 50
+  chosen_min_p: null
+  chosen_min_decoded_chars: 1
+  chosen_require_alnum: false
+  chosen_skip_raw_token_substrings: []
+  skip_decoded_shorter_than: null
+  skip_eval_key_substrings: ["bfcl", "tau", "browse", "search"]
+
+train:
+  dataset_jsonl: null
+  output_dir: "runs/ftpo_lora"
+  merged_output_dir: "runs/ftpo_merged"
+  auto_merged_output_name: true
+  merge_lora: true
+  max_seq_length: 6000
+  batch_size: 4
+  gradient_accumulation_steps: 4
+  num_epochs: 1
+  learning_rate: 0.000015
+  warmup_ratio: 0.1
+  weight_decay: 0.01
+  seed: 3407
+  max_train_examples: 12000
+
+  rejected_regularisation_strength: 0.3
+  chosen_regularisation_strength: 0.5
+  source_balance_mode: "off"
+  min_chosen_tokens: 1
+  filter_rejected_stop_words: false
+
+  lora_r: 256
+  lora_alpha: 128
+  lora_dropout: 0.0
+  lora_ensure_weight_tying: false
+  freeze_early_layers: false
+  n_layers_unfrozen: 5
+  target_modules: ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj", "lm_head"]
+  load_in_4bit: false
+  bf16: true
+
+  lambda_mse_target: 0.05
+  tau_mse_target: 0.5
+  lambda_mse: 0.4
+  clip_epsilon_logits: 2.0
+  early_stopping_chosen_win: 0.4
+  optim: paged_adamw_32bit
